@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Structify - Complete Interactive Data Structures & Algorithms Visualizer</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header / Navbar -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+            <polyline points="2 17 12 22 22 17"></polyline>
+            <polyline points="2 12 12 17 22 12"></polyline>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-title-wrap">
+            <h1>Structify</h1>
+            <span class="version-tag">All-in-One DSA Suite</span>
+          </div>
+          <span class="subtitle">Interactive Data Structures, Trees, Graphs & Algorithms Studio</span>
+        </div>
+      </div>
+
+      <!-- Main Category Navigation Tabs -->
+      <nav class="category-tabs" id="categoryTabs" role="tablist">
+        <button class="cat-tab-btn active" data-cat="basic">
+          <span>Basic Structures</span>
+        </button>
+        <button class="cat-tab-btn" data-cat="trees">
+          <span>Trees</span>
+        </button>
+        <button class="cat-tab-btn" data-cat="graphs">
+          <span>Graphs</span>
+        </button>
+        <button class="cat-tab-btn" data-cat="algorithms">
+          <span>Algorithms</span>
+        </button>
+      </nav>
+
+      <div class="header-badges">
+        <div class="speed-control-wrap">
+          <span class="speed-label">Speed:</span>
+          <select id="globalSpeedSelect" class="speed-select" aria-label="Animation Speed">
+            <option value="very_slow">0.25x Very Slow</option>
+            <option value="slow" selected>0.5x Slow (Recommended)</option>
+            <option value="normal">1.0x Normal</option>
+            <option value="fast">1.5x Fast</option>
+          </select>
+        </div>
+        <button id="soundToggleBtn" class="sound-pill-btn" title="Toggle Sound Synthesis" aria-label="Toggle Sound">
+          <span id="soundIcon">Sound: ON</span>
+        </button>
+        <button id="aiCopilotBtn" class="ai-pill-btn" title="Open Structify AI Copilot & Algorithmic Assistant" aria-label="Toggle AI Copilot">
+          <span class="ai-sparkle">*</span>
+          <span>AI Copilot</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- AI Copilot Drawer / Interactive Studio (Collapsible) -->
+    <section class="ai-copilot-section" id="aiCopilotSection" style="display: none;" aria-label="Structify AI Copilot">
+      <div class="ai-copilot-card">
+        <div class="ai-header">
+          <div class="ai-title-wrap">
+            <span class="ai-header-badge">[AI] COPILOT</span>
+            <h3>Structify Algorithmic Intelligence</h3>
+            <span class="ai-active-ctx" id="aiActiveContextBadge">Context: Array</span>
+          </div>
+          <div class="ai-actions">
+            <button class="ai-action-btn" id="aiExplainStateBtn" title="Analyze Current Visualizer State">Analyze State</button>
+            <button class="ai-action-btn" id="aiGenerateQuizBtn" title="Test knowledge with an AI quiz on this structure">Quiz Me</button>
+            <button class="ai-action-btn" id="aiGenerateCodeBtn" title="Generate clean production code">Generate Code</button>
+            <button class="ai-action-btn secondary" id="aiClearChatBtn" title="Clear chat history">Clear</button>
+            <button class="ai-close-btn" id="aiCloseBtn" title="Close AI Copilot">X</button>
+          </div>
+        </div>
+
+        <div class="ai-body-grid">
+          <!-- Left Column: Interactive Chat & Natural Language Action Prompter -->
+          <div class="ai-chat-column">
+            <div class="ai-quick-prompts-bar">
+              <span class="ai-prompts-label">Quick Prompts:</span>
+              <div class="ai-chips-scroll" id="aiChipsContainer">
+                <!-- Dynamically populated chips -->
+              </div>
+            </div>
+
+            <div class="ai-chat-messages" id="aiChatMessages">
+              <div class="ai-msg ai-assistant">
+                <div class="ai-msg-header">
+                  <span class="ai-avatar">[AI] COPILOT</span>
+                  <span class="ai-time">Now</span>
+                </div>
+                <div class="ai-msg-body">
+                  Hello! I am your <strong>Structify AI Copilot</strong>. I can execute natural language operations on the active visualization, analyze algorithmic state and Big-O efficiency in real-time, generate quizzes, or write multi-language code.
+                  <br><br>
+                  <em>Try entering:</em>
+                  <ul>
+                    <li>"Insert 25, 50, 75, 100"</li>
+                    <li>"Search for 42"</li>
+                    <li>"Explain time complexity and memory trade-offs"</li>
+                    <li>"Generate Python code"</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <form class="ai-input-form" id="aiInputForm">
+              <input type="text" id="aiPromptInput" class="ai-prompt-input" placeholder="Type command (e.g. 'Insert 30, 45, 90', 'Run BFS', 'Explain AVL rotations')..." autocomplete="off">
+              <button type="submit" id="aiSubmitBtn" class="ai-submit-btn">
+                <span>Send</span>
+                <span class="btn-arrow">-&gt;</span>
+              </button>
+            </form>
+          </div>
+
+          <!-- Right Column: Live Telemetry & Inspector Panel -->
+          <div class="ai-inspector-column">
+            <div class="ai-inspector-header">
+              <span class="inspector-title">Live Telemetry & Diagnostics</span>
+              <span class="inspector-badge" id="aiTelemetryStatus">REAL-TIME</span>
+            </div>
+            <div class="ai-telemetry-content" id="aiTelemetryContent">
+              <!-- Dynamically populated live state & telemetry -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sub-navigation: Structure Selector Bar -->
+    <section class="structure-bar">
+      <div class="sub-nav-label">Select Structure:</div>
+      <div class="structure-pills" id="structurePills">
+        <!-- Populated dynamically based on active category -->
+      </div>
+    </section>
+
+    <!-- Dynamic Control Panel -->
+    <section class="control-panel" id="controlPanel">
+      <!-- Dynamic inputs & buttons inserted here via JS based on active structure -->
+    </section>
+
+    <!-- Visualizer Stage -->
+    <main class="visualizer-stage">
+      <!-- Metrics HUD Bar -->
+      <div class="metrics-bar" id="metricsBar">
+        <div class="metric-card">
+          <span class="metric-label">Status</span>
+          <span class="metric-value status-text" id="statusMessage">Initialized</span>
+        </div>
+        <div class="metric-card" id="metricCard1">
+          <span class="metric-label" id="metricLabel1">Size / Nodes</span>
+          <span class="metric-value" id="metricValue1">0</span>
+        </div>
+        <div class="metric-card" id="metricCard2">
+          <span class="metric-label" id="metricLabel2">Capacity / Height</span>
+          <span class="metric-value" id="metricValue2">-</span>
+        </div>
+        <div class="metric-card" id="metricCard3">
+          <span class="metric-label" id="metricLabel3">Property / Top</span>
+          <span class="metric-value" id="metricValue3">-</span>
+        </div>
+      </div>
+
+      <!-- Legend (if applicable) -->
+      <div class="legend-bar" id="legendContainer" style="display: none;"></div>
+
+      <!-- Main Interactive Canvas Viewport -->
+      <div class="viewport-window" id="viewportWindow">
+        <!-- Main dynamic rendering container -->
+        <div class="viewport-inner" id="viewportInner"></div>
+      </div>
+
+      <!-- Graph Representations Drawer (Only shown in Graphs tab) -->
+      <div class="graph-repr-panel" id="graphReprPanel" style="display: none;">
+        <div class="repr-tabs">
+          <button class="repr-tab-btn active" data-repr="adjList">Adjacency List</button>
+          <button class="repr-tab-btn" data-repr="adjMatrix">Adjacency Matrix</button>
+          <button class="repr-tab-btn" data-repr="edgeList">Edge List</button>
+        </div>
+        <div class="repr-content" id="reprContent"></div>
+      </div>
+    </main>
+
+    <!-- Educational Footer: Complexity & Pseudo Code -->
+    <section class="info-section">
+      <div class="info-card">
+        <h3>Structure & Operational Specifications</h3>
+        <h4 id="infoTitle">Array</h4>
+        <p id="infoDescription" class="info-description">
+          An indexed, fixed-size contiguous sequence of elements providing direct constant-time access by index.
+        </p>
+        <div class="complexity-grid">
+          <div class="complexity-item">
+            <span class="complexity-label" id="compLabel1">Access:</span>
+            <code id="compVal1">O(1)</code>
+          </div>
+          <div class="complexity-item">
+            <span class="complexity-label" id="compLabel2">Search:</span>
+            <code id="compVal2">O(n)</code>
+          </div>
+          <div class="complexity-item">
+            <span class="complexity-label" id="compLabel3">Insertion:</span>
+            <code id="compVal3">O(n)</code>
+          </div>
+          <div class="complexity-item">
+            <span class="complexity-label" id="compLabel4">Space Complexity:</span>
+            <code id="compVal4">O(n)</code>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <h3>Formal Implementation Logic / Pseudocode</h3>
+        <pre class="pseudocode-display"><code id="pseudoCode">// Pseudocode loaded dynamically</code></pre>
+      </div>
+    </section>
+
+    <footer class="app-footer">
+      <p><strong>Structify</strong> - Complete Data Structures, Trees, Graphs & Algorithms Studio</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
